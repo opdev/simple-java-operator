@@ -7,7 +7,7 @@ spec:
     owned:
     - kind: DemoResource
       name: demoresources.tools.opdev.io
-      version: v1alpha1
+      version: v1
   displayName: simple-java
   install:
     spec:
@@ -46,8 +46,8 @@ spec:
           template:
             metadata:
               annotations:
-                app.quarkus.io/commit-id: d1f87acb0c6aea21d58ef35307aff4635c32547c
-                app.quarkus.io/build-timestamp: 2023-04-18 - 19:26:12 +0000
+                app.quarkus.io/commit-id: 3b3d5d0c20e27700bc33b2496656ad0c9e0bc4f7
+                app.quarkus.io/build-timestamp: 2023-04-18 - 19:48:24 +0000
                 prometheus.io/scrape: "true"
                 prometheus.io/path: /q/metrics
                 prometheus.io/port: "8080"

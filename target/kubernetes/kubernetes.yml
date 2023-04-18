@@ -3,8 +3,8 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   annotations:
-    app.quarkus.io/commit-id: d1f87acb0c6aea21d58ef35307aff4635c32547c
-    app.quarkus.io/build-timestamp: 2023-04-18 - 19:26:12 +0000
+    app.quarkus.io/commit-id: 3b3d5d0c20e27700bc33b2496656ad0c9e0bc4f7
+    app.quarkus.io/build-timestamp: 2023-04-18 - 19:48:24 +0000
     prometheus.io/scrape: "true"
     prometheus.io/path: /q/metrics
     prometheus.io/port: "8080"
@@ -22,8 +22,8 @@ spec:
   template:
     metadata:
       annotations:
-        app.quarkus.io/commit-id: d1f87acb0c6aea21d58ef35307aff4635c32547c
-        app.quarkus.io/build-timestamp: 2023-04-18 - 19:26:12 +0000
+        app.quarkus.io/commit-id: 3b3d5d0c20e27700bc33b2496656ad0c9e0bc4f7
+        app.quarkus.io/build-timestamp: 2023-04-18 - 19:48:24 +0000
         prometheus.io/scrape: "true"
         prometheus.io/path: /q/metrics
         prometheus.io/port: "8080"
@@ -68,6 +68,30 @@ spec:
       serviceAccountName: simple-java-operator
 ---
 apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: demoresourcereconciler-cluster-role-binding
+roleRef:
+  kind: ClusterRole
+  apiGroup: rbac.authorization.k8s.io
+  name: demoresourcereconciler-cluster-role
+subjects:
+  - kind: ServiceAccount
+    name: simple-java-operator
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: demoresourcereconciler-crd-validating-role-binding
+roleRef:
+  kind: ClusterRole
+  apiGroup: rbac.authorization.k8s.io
+  name: josdk-crd-validating-cluster-role
+subjects:
+  - kind: ServiceAccount
+    name: simple-java-operator
+---
+apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   name: demoresourcereconciler-cluster-role
@@ -100,36 +124,12 @@ rules:
       - get
       - list
 ---
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRoleBinding
-metadata:
-  name: demoresourcereconciler-cluster-role-binding
-roleRef:
-  kind: ClusterRole
-  apiGroup: rbac.authorization.k8s.io
-  name: demoresourcereconciler-cluster-role
-subjects:
-  - kind: ServiceAccount
-    name: simple-java-operator
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRoleBinding
-metadata:
-  name: demoresourcereconciler-crd-validating-role-binding
-roleRef:
-  kind: ClusterRole
-  apiGroup: rbac.authorization.k8s.io
-  name: josdk-crd-validating-cluster-role
-subjects:
-  - kind: ServiceAccount
-    name: simple-java-operator
----
 apiVersion: v1
 kind: ServiceAccount
 metadata:
   annotations:
-    app.quarkus.io/commit-id: d1f87acb0c6aea21d58ef35307aff4635c32547c
-    app.quarkus.io/build-timestamp: 2023-04-18 - 19:26:12 +0000
+    app.quarkus.io/commit-id: 3b3d5d0c20e27700bc33b2496656ad0c9e0bc4f7
+    app.quarkus.io/build-timestamp: 2023-04-18 - 19:48:24 +0000
   labels:
     app.kubernetes.io/version: 0.0.1-SNAPSHOT
     app.kubernetes.io/name: simple-java-operator
@@ -151,8 +151,8 @@ apiVersion: v1
 kind: Service
 metadata:
   annotations:
-    app.quarkus.io/commit-id: d1f87acb0c6aea21d58ef35307aff4635c32547c
-    app.quarkus.io/build-timestamp: 2023-04-18 - 19:26:12 +0000
+    app.quarkus.io/commit-id: 3b3d5d0c20e27700bc33b2496656ad0c9e0bc4f7
+    app.quarkus.io/build-timestamp: 2023-04-18 - 19:48:24 +0000
     prometheus.io/scrape: "true"
     prometheus.io/path: /q/metrics
     prometheus.io/port: "8080"

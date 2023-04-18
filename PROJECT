@@ -13,5 +13,5 @@ resources:
   domain: opdev.io
   group: tools
   kind: DemoResource
-  version: v1alpha1
+  version: v1
 version: "3"
