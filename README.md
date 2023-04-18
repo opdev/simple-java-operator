@@ -6,3 +6,10 @@
 operator-sdk init --plugins quarkus --domain opdev.io --project-name simple-java
 operator-sdk create api --group tools --version v1alpha1 --kind DemoResource
 ```
+
+## Compilation (Maven)
+
+```
+mvn clean compile
+mvn quarkus:dev
+```

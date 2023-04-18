@@ -2,5 +2,13 @@ package io.opdev;
 
 public class DemoResourceSpec {
 
-    // Add Spec information here
+    private String message;
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
 }
