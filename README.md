@@ -1,14 +1,8 @@
-# repository-template
-new repository description
+# Simple Java Operator built with Java Operator SDK
 
-## Usage
-usage description
+## Generate code
 
-## Installation
-installation steps
-
-## How to contribute
-steps
-
-## License
-license description and link
+```
+operator-sdk init --plugins quarkus --domain opdev.io --project-name simple-java
+operator-sdk create api --group tools --version v1alpha1 --kind DemoResource
+```
