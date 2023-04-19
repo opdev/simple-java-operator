@@ -1,5 +1,11 @@
 # Simple Java Operator built with Java Operator SDK
 
+## Prerequisites
+
+```
+brew install operator-sdk mvn
+```
+
 ## Generate code
 
 ```
