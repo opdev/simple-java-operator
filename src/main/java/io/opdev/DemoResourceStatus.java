@@ -2,5 +2,13 @@ package io.opdev;
 
 public class DemoResourceStatus {
 
-    // Add Status information here
+    private String specMessage;
+
+    public String getSpecMessage() {
+        return specMessage;
+    }
+
+    public void setSpecMessage(String specMessage) {
+        this.specMessage = specMessage;
+    }
 }

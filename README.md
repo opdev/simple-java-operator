@@ -6,6 +6,10 @@
 brew install operator-sdk mvn
 ```
 
+## Additional context
+
+- https://javaoperatorsdk.io/docs/features
+
 ## Generate code
 
 ```
@@ -17,6 +21,11 @@ operator-sdk create api --group tools --version v1 --kind DemoResource
 
 ```
 mvn clean compile
-oc apply -f target/kubernetes/demoresources.tools.opdev.io-v1.yml
 mvn quarkus:dev
+```
+
+## Testing (while Quarkus is running or controller deployed)
+
+```
+oc apply -f src/test/resources/cr-test-demo-resource.yaml
 ```
