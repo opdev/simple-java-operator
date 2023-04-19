@@ -22,9 +22,12 @@ public class DemoResourceReconciler implements Reconciler<DemoResource> {
     
     log.info("This is the reconciliation loop of the simple-java-operator. demo resource message is {}", resource.getSpec().getMessage());
     String desiredMsg = resource.getSpec().getMessage();
+    if (resource.getStatus() == null){
+      resource.setStatus(new DemoResourceStatus());
+    }
     if (resource.getStatus().getSpecMessage() != desiredMsg){ 
        resource.getStatus().setSpecMessage(desiredMsg);
-       return UpdateControl.patchStatus(resource);
+       return UpdateControl.updateStatus(resource);
     }
 
     return UpdateControl.noUpdate();
