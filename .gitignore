@@ -4,6 +4,14 @@
 *.dll
 *.so
 *.dylib
+*.class
+*.jar
+
+# Maven outputs
+*.lst
+
+# Quarkus bootstrap
+*.dat
 
 # Test binary, built with `go test -c`
 *.test
