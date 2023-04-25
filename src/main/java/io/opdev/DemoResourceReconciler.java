@@ -30,7 +30,7 @@ public class DemoResourceReconciler implements Reconciler<DemoResource> {
   public UpdateControl<DemoResource> reconcile(DemoResource resource, Context<DemoResource> context) {
     
     log.info("This is the reconciliation loop of the simple-java-operator. demo resource message is {}", resource.getSpec().getMessage());
-    if ((reconcileDeployment(resource, context) || reconcileService(resource, context)) && reconcileStatus(resource,context)){
+    if (reconcileDeployment(resource, context) | reconcileService(resource, context) | reconcileStatus(resource,context)){
       return UpdateControl.updateStatus(resource);
     }
 
@@ -54,13 +54,12 @@ public class DemoResourceReconciler implements Reconciler<DemoResource> {
   private boolean reconcileService(DemoResource resource, Context<DemoResource> context) {
     String desiredName = resource.getMetadata().getName();
 
-    Service existingDemoService = client.services().withName(desiredName).get();
-    log.info("existing service:", existingDemoService);
-    if (existingDemoService == null){
+    Service demoService = client.services().withName(desiredName).get();
+    if (demoService == null){
       log.info("Creating a service {}", desiredName);
       Map<String,String> labels = createLabels(desiredName);
 
-      Service demoService = new ServiceBuilder()
+      demoService = new ServiceBuilder()
         .withMetadata(createMetadata(resource, labels))
         .withNewSpec()
             .addNewPort()
@@ -87,13 +86,12 @@ public class DemoResourceReconciler implements Reconciler<DemoResource> {
   private boolean reconcileDeployment(DemoResource resource, Context<DemoResource> context) {
     String desiredName = resource.getMetadata().getName();
 
-    Deployment existingDemoDeployment = client.apps().deployments().withName(desiredName).get();
-    log.info("existing deployment:", existingDemoDeployment);
-    if (existingDemoDeployment == null){
+    Deployment demoDeployment = client.apps().deployments().withName(desiredName).get();
+    if (demoDeployment == null){
       log.info("Creating a deployment {}", desiredName);
       Map<String,String> labels = createLabels(desiredName);
 
-      Deployment demoDeployment = new DeploymentBuilder()
+      demoDeployment = new DeploymentBuilder()
       .withMetadata(createMetadata(resource, labels))
       .withNewSpec()
         .withNewSelector().withMatchLabels(labels).endSelector()

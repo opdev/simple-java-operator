@@ -31,3 +31,14 @@ mvn quarkus:dev
 ```
 oc apply -f src/test/resources/cr-test-demo-resource.yaml
 ```
+
+## Cleanup
+
+### Removing the demo resource
+### Note: this works because all generated resources (Operands) have Owner References to the demo resource
+```
+oc delete -f src/test/resources/cr-test-demo-resource.yaml
+```
+### Removing the operator
+Press `q` from Quarkus, or `make undeploy` in case you have applied the `kubernetes.yaml`.
+
