@@ -1,5 +1,6 @@
 
 VERSION ?= 0.0.1
+IMAGE_BUILDER?=docker
 
 # CHANNELS define the bundle channels used in the bundle.
 # Add a new line here if you would like to change its default config. (E.g CHANNELS = "candidate,fast,stable")
@@ -61,10 +62,10 @@ help: ## Display this help.
 ##@ Build
 
 docker-build: ## Build docker image with the manager.
-	mvn clean package -Dquarkus.container-image.build=true -Dquarkus.container-image.image=${IMG}
+	mvn clean package -Pnative -Dquarkus.container-image.build=true -Dquarkus.container-image.image=${IMG} -Dquarkus.native.container-runtime=${IMAGE_BUILDER}
 
 docker-push: ## Push docker image with the manager.
-	mvn clean package -Dquarkus.container-image.push=true -Dquarkus.container-image.image=${IMG}
+	mvn clean package -Pnative -Dquarkus.container-image.push=true -Dquarkus.container-image.image=${IMG} -Dquarkus.native.container-runtime=${IMAGE_BUILDER}
 
 ##@ Deployment
 
@@ -80,6 +81,14 @@ deploy: ## Deploy controller to the K8s cluster specified in ~/.kube/config.
 undeploy: ## Undeploy controller from the K8s cluster specified in ~/.kube/config.
 	kubectl delete -f target/kubernetes/kubernetes.yml
 
+deploy-hack:
+	export MYNS=$(kubectl config view --minify -o 'jsonpath={..namespace}')
+	sed 's/PLACEHOLDER/${MYNS}/g' hack/kubernetes.yml | kubectl apply -f -
+
+undeploy-hack:
+	export MYNS=$(kubectl config view --minify -o 'jsonpath={..namespace}')
+	sed 's/PLACEHOLDER/${MYNS}/g' hack/kubernetes.yml | kubectl delete -f -
+
 ##@Bundle
 .PHONY: bundle
 bundle:  ## Generate bundle manifests and metadata, then validate generated files.
@@ -89,20 +98,36 @@ bundle:  ## Generate bundle manifests and metadata, then validate generated file
 	
 .PHONY: bundle-build
 bundle-build: ## Build the bundle image.
-	docker build -t $(BUNDLE_IMG) -f target/bundle/$(PACKAGE_NAME)/bundle.Dockerfile target/bundle/$(PACKAGE_NAME)
+	${IMAGE_BUILDER} build -t $(BUNDLE_IMG) -f target/bundle/$(PACKAGE_NAME)/bundle.Dockerfile target/bundle/$(PACKAGE_NAME)
 
 .PHONY: bundle-push
 bundle-push: ## Push the bundle image.
-	docker push $(BUNDLE_IMG)
+	${IMAGE_BUILDER} push $(BUNDLE_IMG)
 
 .PHONY: catalog-build
-catalog-build: ## Build the catalog image.
-	opm index add \
+catalog-build: opm ## Build the catalog image.
+	$(OPM) index add \
         --bundles $(BUNDLE_IMG) \
         --tag $(CATALOG_IMG) \
-        --build-tool docker
+        --build-tool ${IMAGE_BUILDER}
 
 .PHONY: catalog-push
 catalog-push: ## Push the catalog image.
-	docker push $(CATALOG_IMG)
+	${IMAGE_BUILDER} push $(CATALOG_IMG)
 
+.PHONY: opm
+OPM = ./bin/opm
+opm: ## Download opm locally if necessary.
+ifeq (,$(wildcard $(OPM)))
+ifeq (,$(shell which opm 2>/dev/null))
+	@{ \
+	set -e ;\
+	mkdir -p $(dir $(OPM)) ;\
+	OS=$(shell go env GOOS) && ARCH=$(shell go env GOARCH) && \
+	curl -sSLo $(OPM) https://github.com/operator-framework/operator-registry/releases/download/v1.23.0/$${OS}-$${ARCH}-opm ;\
+	chmod +x $(OPM) ;\
+	}
+else
+OPM = $(shell which opm)
+endif
+endif
