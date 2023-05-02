@@ -4,10 +4,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Map;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.HashMap;
+import java.util.List;
 
 import io.fabric8.kubernetes.api.model.ObjectMetaBuilder;
 import io.fabric8.kubernetes.api.model.ObjectMeta;
+import io.fabric8.kubernetes.api.model.HasMetadata;
 import io.fabric8.kubernetes.api.model.ServiceBuilder;
 import io.fabric8.kubernetes.api.model.Service;
 import io.fabric8.kubernetes.api.model.apps.Deployment;
@@ -22,6 +26,8 @@ public class DemoResourceReconciler implements Reconciler<DemoResource> {
 
   private static final Logger log = LoggerFactory.getLogger(DemoResourceReconciler.class);
 
+  private final String yamlPath = "/deployments/busybox-deploy.yaml";
+
   public DemoResourceReconciler(KubernetesClient client) {
     this.client = client;
   }
@@ -32,6 +38,12 @@ public class DemoResourceReconciler implements Reconciler<DemoResource> {
     log.info("This is the reconciliation loop of the simple-java-operator. demo resource message is {}", resource.getSpec().getMessage());
     if (reconcileDeployment(resource, context) | reconcileService(resource, context) | reconcileStatus(resource,context)){
       return UpdateControl.updateStatus(resource);
+    }
+
+    try {
+      createDeploymentFromYaml(yamlPath);
+    } catch (FileNotFoundException e) {
+      e.printStackTrace();
     }
 
     return UpdateControl.noUpdate();
@@ -128,6 +140,13 @@ public class DemoResourceReconciler implements Reconciler<DemoResource> {
         .withLabels(labels)
     .build();
 }
+
+private void createDeploymentFromYaml(String pathToYaml) throws FileNotFoundException {
+  // Parse a yaml into a list of Kubernetes resources
+  List<HasMetadata> result = client.load(new FileInputStream(pathToYaml)).get();
+  // Apply Kubernetes Resources
+  client.resourceList(result).createOrReplace();
+  }
 
 }
 

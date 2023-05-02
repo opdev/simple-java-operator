@@ -1,0 +1,200 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    app.quarkus.io/commit-id: 834155c48e0beccc2279e5842aa679699a741f70
+    app.quarkus.io/build-timestamp: 2023-05-02 - 15:48:05 +0000
+    prometheus.io/scrape: "true"
+    prometheus.io/path: /q/metrics
+    prometheus.io/port: "8080"
+    prometheus.io/scheme: http
+  labels:
+    app.kubernetes.io/name: simple-java-operator-controller
+    app.kubernetes.io/version: 0.0.1-SNAPSHOT
+  name: simple-java-operator-controller
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: simple-java-operator-controller
+      app.kubernetes.io/version: 0.0.1-SNAPSHOT
+  template:
+    metadata:
+      annotations:
+        app.quarkus.io/commit-id: 834155c48e0beccc2279e5842aa679699a741f70
+        app.quarkus.io/build-timestamp: 2023-05-02 - 15:48:05 +0000
+        prometheus.io/scrape: "true"
+        prometheus.io/path: /q/metrics
+        prometheus.io/port: "8080"
+        prometheus.io/scheme: http
+      labels:
+        app.kubernetes.io/name: simple-java-operator-controller
+        app.kubernetes.io/version: 0.0.1-SNAPSHOT
+    spec:
+      containers:
+        - env:
+            - name: KUBERNETES_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+          image: quay.io/opdev/simple-java-operator-controller:v0.0.1
+          imagePullPolicy: Always
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /q/health/live
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 10
+          name: simple-java-operator-controller
+          ports:
+            - containerPort: 8080
+              name: http
+              protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /q/health/ready
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 10
+      serviceAccountName: simple-java-operator-controller
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: demoresourcereconciler-cluster-role-binding
+roleRef:
+  kind: ClusterRole
+  apiGroup: rbac.authorization.k8s.io
+  name: demoresourcereconciler-cluster-role
+subjects:
+  - kind: ServiceAccount
+    name: simple-java-operator-controller
+    namespace: PLACEHOLDER
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: demoresourcereconciler-crd-validating-role-binding
+roleRef:
+  kind: ClusterRole
+  apiGroup: rbac.authorization.k8s.io
+  name: josdk-crd-validating-cluster-role
+subjects:
+  - kind: ServiceAccount
+    name: simple-java-operator-controller
+    namespace: PLACEHOLDER
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: demoresourcereconciler-cluster-role
+rules:
+  - apiGroups:
+      - tools.opdev.io
+    resources:
+      - demoresources
+      - demoresources/status
+      - demoresources/finalizers
+    verbs:
+      - get
+      - list
+      - watch
+      - patch
+      - update
+      - create
+      - delete
+  - apiGroups:
+      - apps
+    resources:
+      - deployments
+    verbs:
+      - get
+      - list
+      - watch
+      - patch
+      - update
+      - create
+      - delete
+  - apiGroups:
+      - ""
+    resources:
+      - services
+    verbs:
+      - get
+      - list
+      - watch
+      - patch
+      - update
+      - create
+      - delete
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: josdk-crd-validating-cluster-role
+rules:
+  - apiGroups:
+      - apiextensions.k8s.io
+    resources:
+      - customresourcedefinitions
+    verbs:
+      - get
+      - list
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  annotations:
+    app.quarkus.io/commit-id: 834155c48e0beccc2279e5842aa679699a741f70
+    app.quarkus.io/build-timestamp: 2023-05-02 - 15:48:05 +0000
+  labels:
+    app.kubernetes.io/name: simple-java-operator-controller
+    app.kubernetes.io/version: 0.0.1-SNAPSHOT
+  name: simple-java-operator-controller
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: simple-java-operator-controller-view
+roleRef:
+  kind: ClusterRole
+  apiGroup: rbac.authorization.k8s.io
+  name: view
+subjects:
+  - kind: ServiceAccount
+    name: simple-java-operator-controller
+    namespace: PLACEHOLDER
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    app.quarkus.io/commit-id: 834155c48e0beccc2279e5842aa679699a741f70
+    app.quarkus.io/build-timestamp: 2023-05-02 - 15:48:05 +0000
+    prometheus.io/scrape: "true"
+    prometheus.io/path: /q/metrics
+    prometheus.io/port: "8080"
+    prometheus.io/scheme: http
+  labels:
+    app.kubernetes.io/name: simple-java-operator-controller
+    app.kubernetes.io/version: 0.0.1-SNAPSHOT
+  name: simple-java-operator-controller
+spec:
+  ports:
+    - name: http
+      port: 80
+      protocol: TCP
+      targetPort: 8080
+  selector:
+    app.kubernetes.io/name: simple-java-operator-controller
+    app.kubernetes.io/version: 0.0.1-SNAPSHOT
+  type: ClusterIP

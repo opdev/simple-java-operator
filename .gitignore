@@ -19,11 +19,17 @@
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
 
-#intellij
+# Intellij
 .idea
+
+# VSCode
+.vscode/
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
 
 #generated code
 target/**/*
+
+# Downloaded binaries
+bin/
