@@ -1,8 +1,0 @@
-apiVersion: tools.opdev.io/v1
-kind: DemoResource
-metadata:
-  name: test-demo-resource
-spec:
-  message: "Hello from test-demo-resource"
-status:
-  specMessage: ""
