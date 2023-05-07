@@ -89,7 +89,7 @@ COPY --chown=185 target/quarkus-app/app/ /deployments/app/
 COPY --chown=185 target/quarkus-app/quarkus/ /deployments/quarkus/
 
 # Add sample deployment yaml to apply to the cluster from code
-COPY --chown=185 src/main/resources/busybox-deploy.yaml /deployments/
+COPY --chown=185 src/main/resources/*.yaml /deployments/
 
 EXPOSE 8080
 USER 185
