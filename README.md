@@ -2,6 +2,11 @@
 
 ## Prerequisites
 
+- Operator SDK installed.
+- Maven installed.
+- AMQ Streams Operator installed in your cluster.
+  
+If you are on Mac OS, Operator SDK and Maven can be installed using Homebrew - 
 ```
 brew install operator-sdk mvn
 ```

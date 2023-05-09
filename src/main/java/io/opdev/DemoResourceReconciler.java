@@ -10,6 +10,9 @@ import java.util.HashMap;
 import java.util.List;
 
 import io.fabric8.kubernetes.api.model.ObjectMetaBuilder;
+import io.fabric8.kubernetes.api.model.Quantity;
+import io.fabric8.kubernetes.api.model.ResourceRequirements;
+import io.fabric8.kubernetes.api.model.ResourceRequirementsBuilder;
 import io.fabric8.kubernetes.api.model.ObjectMeta;
 import io.fabric8.kubernetes.api.model.HasMetadata;
 import io.fabric8.kubernetes.api.model.ServiceBuilder;
@@ -26,7 +29,8 @@ public class DemoResourceReconciler implements Reconciler<DemoResource> {
 
   private static final Logger log = LoggerFactory.getLogger(DemoResourceReconciler.class);
 
-  private final String yamlPath = "/deployments/busybox-deploy.yaml";
+  private final String deploymentYamlPath = "/deployments/busybox-deploy.yaml";
+  private final String kafkaYamlPath = "/deployments/amq-kafka-cluster.yaml";
 
   public DemoResourceReconciler(KubernetesClient client) {
     this.client = client;
@@ -41,7 +45,8 @@ public class DemoResourceReconciler implements Reconciler<DemoResource> {
     }
 
     try {
-      createDeploymentFromYaml(yamlPath);
+      createFromYaml(deploymentYamlPath);
+      createFromYaml(kafkaYamlPath);
     } catch (FileNotFoundException e) {
       e.printStackTrace();
     }
@@ -103,6 +108,13 @@ public class DemoResourceReconciler implements Reconciler<DemoResource> {
       log.info("Creating a deployment {}", desiredName);
       Map<String,String> labels = createLabels(desiredName);
 
+      ResourceRequirements requestLimit = new ResourceRequirementsBuilder() //
+            .addToLimits("cpu", new Quantity("300m")) //
+            .addToLimits("memory", new Quantity("256Mi")) //
+            .addToRequests("cpu", new Quantity("100m")) //
+            .addToRequests("memory", new Quantity("56Mi")) //
+            .build();
+
       demoDeployment = new DeploymentBuilder()
       .withMetadata(createMetadata(resource, labels))
       .withNewSpec()
@@ -115,6 +127,7 @@ public class DemoResourceReconciler implements Reconciler<DemoResource> {
                     .addNewPort()
                         .withName("http").withProtocol("TCP").withContainerPort(8080)
                     .endPort()
+                    .withResources(requestLimit)
                 .endContainer()
             .endSpec()
         .endTemplate()
@@ -141,7 +154,7 @@ public class DemoResourceReconciler implements Reconciler<DemoResource> {
     .build();
 }
 
-private void createDeploymentFromYaml(String pathToYaml) throws FileNotFoundException {
+private void createFromYaml(String pathToYaml) throws FileNotFoundException {
   // Parse a yaml into a list of Kubernetes resources
   List<HasMetadata> result = client.load(new FileInputStream(pathToYaml)).get();
   // Apply Kubernetes Resources
