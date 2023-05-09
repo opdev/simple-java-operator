@@ -28,8 +28,11 @@
 # Dependency directories (remove the comment below to include it)
 # vendor/
 
-#generated code
+# Generated code
 target/**/*
 
 # Downloaded binaries
 bin/
+
+# Generated bundle folder
+bundle/
