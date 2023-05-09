@@ -62,10 +62,10 @@ help: ## Display this help.
 ##@ Build
 
 docker-build: ## Build docker image with the manager.
-	mvn clean package -Pnative -Dquarkus.container-image.build=true -Dquarkus.container-image.image=${IMG} -Dquarkus.native.container-runtime=${IMAGE_BUILDER}
+	mvn clean package -Dquarkus.container-image.build=true -Dquarkus.container-image.image=${IMG}
 
 docker-push: ## Push docker image with the manager.
-	mvn clean package -Pnative -Dquarkus.container-image.push=true -Dquarkus.container-image.image=${IMG} -Dquarkus.native.container-runtime=${IMAGE_BUILDER}
+	mvn clean package -Dquarkus.container-image.push=true -Dquarkus.container-image.image=${IMG}
 
 ##@ Deployment
 
